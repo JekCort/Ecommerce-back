@@ -40,20 +40,21 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 // Update a user
 
 const updatedUser = asyncHandler(async (req, res) => {
-    const {id} = req.params;
+    const {_id} = req.user;
+
     try {
         const updatedUser = await User.findByIdAndUpdate(
-                id,
-                {
-                    firstname: req.body?.firstname,
-                    lastname: req.body?.lastname,
-                    email: req.body?.email,
-                    mobile: req.body?.mobile,
-                },
-                {
-                    new: true
-                }
-            );
+            _id,
+            {
+                firstname: req.body?.firstname,
+                lastname: req.body?.lastname,
+                email: req.body?.email,
+                mobile: req.body?.mobile,
+            },
+            {
+                new: true
+            }
+        );
         res.json(updatedUser)
     } catch (error) {
         throw new Error(error)
@@ -103,4 +104,39 @@ const deleteaUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = {createUser, loginUserCtrl, getAllUser, getaUser, deleteaUser, updatedUser};
+const blockUser = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    try {
+        const block =await User.findByIdAndUpdate(id, {
+                isBlocked: true
+            },
+            {
+                new: true
+            }
+        );
+        res.json({
+            message: "User  Blocked"
+        });
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+const unblockUser = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    try {
+        const unblock =await User.findByIdAndUpdate(id, {
+                isBlocked: false
+            },
+            {
+                new: true
+            }
+        );
+        res.json({
+            message: "User  Unblocked"
+        });
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+module.exports = {createUser, loginUserCtrl, getAllUser, getaUser, deleteaUser, updatedUser, blockUser, unblockUser};
