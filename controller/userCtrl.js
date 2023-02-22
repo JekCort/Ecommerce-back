@@ -5,6 +5,8 @@ const validateMongoDbId = require("../utils/validateMongodbid");
 const {generateRefreshToken} = require("../config/refreshtoken")
 const jwt = require("jsonwebtoken");
 
+// const crypto = require("crypto")
+
 
 // Create a User
 
@@ -95,7 +97,7 @@ const logout = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true
     });
-     res.sendStatus(204) // forbidden
+    res.sendStatus(204) // forbidden
 });
 
 // Update a user
@@ -203,6 +205,20 @@ const unblockUser = asyncHandler(async (req, res) => {
     }
 })
 
+const updatePassword = asyncHandler(async (req, res) => {
+    const {_id} = req.user;
+    const {password} = req.body;
+    validateMongoDbId(_id);
+    const user = await User.findById(_id);
+    if (password) {
+        user.password = password;
+        const updatePassword = await user.save();
+        res.json(updatePassword);
+    } else {
+        res.json(user);
+    }
+});
+
 module.exports = {
     createUser,
     loginUserCtrl,
@@ -214,4 +230,5 @@ module.exports = {
     unblockUser,
     handleRefreshToken,
     logout,
+    updatePassword,
 };
